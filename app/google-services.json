@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "302648272845",
+    "project_id": "realtimeb5",
+    "storage_bucket": "realtimeb5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302648272845:android:fa401aba1b3234f5d44684",
+        "android_client_info": {
+          "package_name": "org.freedu.realtimeb5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCDoQam1PocoJr0TCaSo9UhoKX2luVny-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
