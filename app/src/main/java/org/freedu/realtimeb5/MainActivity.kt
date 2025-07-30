@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
             val user = User(userId, name, email)
             database.child(userId).setValue(user).addOnSuccessListener {
-                Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "data saved", Toast.LENGTH_SHORT).show()
                 binding.nameInput.text.clear()
                 binding.emailInput.text.clear()
             }
