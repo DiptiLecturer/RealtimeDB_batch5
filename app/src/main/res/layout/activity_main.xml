@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:orientation="vertical">
 
@@ -33,6 +34,15 @@
         android:textColor="@color/white"
         android:backgroundTint="#9900ACC1"
         android:text="Save" />
+    <Button
+        android:id="@+id/logoutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="8dp"
+        android:textColor="@color/white"
+        android:backgroundTint="#D81B60"
+        android:text="Logout" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userRecyclerView"
@@ -40,5 +50,6 @@
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         tools:listitem="@layout/item_user" />
+
 
 </LinearLayout>
