@@ -1,15 +1,16 @@
 package org.freedu.realtimeb5
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import org.freedu.realtimeb5.databinding.ItemUserBinding
 
 
-
-class UserAdapter(private val userList: List<User>) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
+class UserAdapter(
+    private val userList: List<User>,
+    private val onEditClick: (User) -> Unit,
+    private val onDeleteClick: (User) -> Unit
+) : RecyclerView.Adapter<UserAdapter.UserViewHolder>() {
 
     // ViewHolder class with binding
     class UserViewHolder(val binding: ItemUserBinding) : RecyclerView.ViewHolder(binding.root)
@@ -25,7 +26,14 @@ class UserAdapter(private val userList: List<User>) : RecyclerView.Adapter<UserA
         // Use binding to access views
         holder.binding.userName.text = user.name
         holder.binding.userEmail.text = user.email
+        holder.binding.btnEdit.setOnClickListener {
+            onEditClick(user)
+        }
+        holder.binding.btnDelete.setOnClickListener {
+            onDeleteClick(user)
+        }
     }
+
 
     override fun getItemCount(): Int = userList.size
 }

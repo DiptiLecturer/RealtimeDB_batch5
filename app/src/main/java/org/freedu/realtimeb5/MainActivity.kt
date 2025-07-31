@@ -1,12 +1,15 @@
 package org.freedu.realtimeb5
 
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -15,9 +18,11 @@ import com.google.firebase.database.ValueEventListener
 import org.freedu.realtimeb5.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var database: DatabaseReference
     private var userList = mutableListOf<User>()
+    private var editUserId: String? = null  // For tracking which user is being edited
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,20 +31,35 @@ class MainActivity : AppCompatActivity() {
 
         database = FirebaseDatabase.getInstance().getReference("Users")
 
+        // Save or Update Button
         binding.saveButton.setOnClickListener {
             val name = binding.nameInput.text.toString()
             val email = binding.emailInput.text.toString()
-            val userId = database.push().key!!
 
-            val user = User(userId, name, email)
-            database.child(userId).setValue(user).addOnSuccessListener {
-                Toast.makeText(this, "data saved", Toast.LENGTH_SHORT).show()
-                binding.nameInput.text.clear()
-                binding.emailInput.text.clear()
+            if (name.isBlank() || email.isBlank()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
             }
+
+            if (editUserId == null) {
+                // New data
+                val userId = database.push().key!!
+                val user = User(userId, name, email)
+                database.child(userId).setValue(user)
+            } else {
+                // Update data
+                val updatedUser = User(editUserId, name, email)
+                database.child(editUserId!!).setValue(updatedUser)
+                editUserId = null
+                binding.saveButton.text = "Save"
+            }
+            Toast.makeText(this@MainActivity, "data added", Toast.LENGTH_SHORT).show()
+            binding.nameInput.text.clear()
+            binding.emailInput.text.clear()
+            hideKeyboard()
         }
 
-        // Fetch and display data
+        // Read and Display Data
         database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 userList.clear()
@@ -48,7 +68,19 @@ class MainActivity : AppCompatActivity() {
                     user?.let { userList.add(it) }
                 }
                 binding.userRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-                binding.userRecyclerView.adapter = UserAdapter(userList)
+                binding.userRecyclerView.adapter = UserAdapter(userList,
+                    onEditClick = { user ->
+                        binding.nameInput.setText(user.name)
+                        binding.emailInput.setText(user.email)
+                        editUserId = user.id
+                        binding.saveButton.text = "Update"
+
+                    },
+                    onDeleteClick = { user ->
+                        database.child(user.id!!).removeValue()
+                        Toast.makeText(this@MainActivity, "data deleted", Toast.LENGTH_SHORT).show()
+                    }
+                )
             }
 
             override fun onCancelled(error: DatabaseError) {
@@ -56,4 +88,23 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    // ✅ Function to hide keyboard
+    private fun hideKeyboard() {
+        val view = currentFocus
+        if (view != null) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(view.windowToken, 0)
+        }
+    }
+
+    // ✅ Close keyboard when tapping outside EditTexts
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        if (currentFocus != null) {
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(currentFocus!!.windowToken, 0)
+        }
+        return super.dispatchTouchEvent(ev)
+    }
 }
+
