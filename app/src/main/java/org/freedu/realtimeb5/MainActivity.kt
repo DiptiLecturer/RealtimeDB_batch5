@@ -4,12 +4,8 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -52,6 +48,8 @@ class MainActivity : AppCompatActivity() {
                 database.child(editUserId!!).setValue(updatedUser)
                 editUserId = null
                 binding.saveButton.text = "Save"
+                Toast.makeText(this@MainActivity, "data updated", Toast.LENGTH_SHORT).show()
+
             }
             Toast.makeText(this@MainActivity, "data added", Toast.LENGTH_SHORT).show()
             binding.nameInput.text.clear()
@@ -68,16 +66,20 @@ class MainActivity : AppCompatActivity() {
                     user?.let { userList.add(it) }
                 }
                 binding.userRecyclerView.layoutManager = LinearLayoutManager(this@MainActivity)
-                binding.userRecyclerView.adapter = UserAdapter(userList,
+                binding.userRecyclerView.adapter = UserAdapter(
+                    userList,
                     onEditClick = { user ->
                         binding.nameInput.setText(user.name)
                         binding.emailInput.setText(user.email)
                         editUserId = user.id
                         binding.saveButton.text = "Update"
 
+
                     },
                     onDeleteClick = { user ->
                         database.child(user.id!!).removeValue()
+                        binding.nameInput.text.clear()
+                        binding.emailInput.text.clear()
                         Toast.makeText(this@MainActivity, "data deleted", Toast.LENGTH_SHORT).show()
                     }
                 )

@@ -26,6 +26,7 @@ class UserAdapter(
         // Use binding to access views
         holder.binding.userName.text = user.name
         holder.binding.userEmail.text = user.email
+
         holder.binding.btnEdit.setOnClickListener {
             onEditClick(user)
         }

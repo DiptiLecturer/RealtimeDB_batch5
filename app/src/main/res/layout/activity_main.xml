@@ -30,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="8dp"
+        android:textColor="@color/white"
         android:backgroundTint="#9900ACC1"
         android:text="Save" />
 
